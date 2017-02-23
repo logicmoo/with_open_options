@@ -1,5 +1,5 @@
 name(with_open_options).
-version('0.0.7').
+version('0.0.8').
 title('Utilities to open various objects for read/write').
 author( 'Douglas Miles', 'http://www.linkedin.com/in/logicmoo' ).
 packager( 'Douglas Miles', 'http://www.linkedin.com/in/logicmoo' ).
