@@ -141,14 +141,9 @@
 :- dynamic
         local_directory_search/1.
 
+:- set_module(class(library)).
 :- use_module(library(dialect)).
 
-:- if(current_predicate(lmcode:combine_lmsystem/0)).
-:- module(logicmoo_util_filesystem,
-[  % when the predciates are not being moved from file to file the exports will be moved here
-       ]).
-:- else.
-:- endif.
 
 :- ensure_loaded(library(no_repeats)).
 
@@ -293,7 +288,7 @@ filematch(Spec,Result):-  enumerate_files(Spec,Result).
 % Filematch Ext.
 %
 filematch_ext(Ext,FileIn,File):-
-  w_tl(t_l:file_ext(Ext),filematch(FileIn,File)).
+  locally(t_l:file_ext(Ext),filematch(FileIn,File)).
 
 :- meta_predicate(enumerate_files(:,-)).
 :- export(enumerate_files/2).
@@ -332,7 +327,7 @@ enumerate_m_files_mscoped(M, Mask,File1):-
    (((M\=user,user:file_search_path(M,SP),expand_file_search_path(SP,Dir));((module_property(M, file(File)),directory_file_path(Dir,_,File)))),
    exists_directory(Dir)),List),
   list_to_set(List,Set),
-  w_tl(Set,enumerate_files0(Mask,File1)).
+  locally(Set,enumerate_files0(Mask,File1)).
 
 :- export(enumerate_files0/2).
 

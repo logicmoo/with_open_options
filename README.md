@@ -3,7 +3,7 @@ Utilities to open various objects for read/write
 
 ```prolog
 
-:- pack_install('https://github.com/TeamSPoon/with_open_options.git').
+:- pack_install('https://github.com/TeamSPoon/pack_with_open_options.git').
 
 ```
 

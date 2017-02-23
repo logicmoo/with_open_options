@@ -59,6 +59,7 @@
      %   ssl_protocol_hook/4,
         text_to_stream/2.
 
+:- set_module(class(library)).
 
 :- meta_predicate each_single(2,*).
 :- meta_predicate translate_file_stream(3,*,*,*,*).
@@ -171,7 +172,7 @@ ensure_loaded_with(ModuleFile,With):-
    strip_module(ModuleFile,Module,File),
       absolute_file_name(File,Name),
       ensure_translated_with(ModuleFile,With,NamePl),
-      w_tl(set_prolog_flag(do_renames,never),
+      locally(set_prolog_flag(do_renames,never),
       time(Module:load_files([NamePl],[derived_from(Name),if(not_loaded),redefine_module(false),qcompile(auto)]))).
 
 ensure_translated_with(ModuleFile,With,NamePl):-   
