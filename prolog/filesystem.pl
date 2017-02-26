@@ -59,6 +59,7 @@
             local_directory_search_combined2/1,
             locally_to_dir/2,
             my_absolute_file_name/2,
+            maybe_delete_import_module/2,
             normalize_path/2,
             os_to_prolog_filename/2,
             prolog_file_dir/1,
@@ -609,7 +610,7 @@ if_startup_script:- prolog_load_context(source, HereF),file_base_name(HereF,Here
 
 %= 	 	 
 
-%% if_startup_script( :GoalCall) is semidet.
+%% if_startup_script( :Goal) is semidet.
 %
 % If Startup Script.
 %

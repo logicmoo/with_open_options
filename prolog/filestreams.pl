@@ -209,7 +209,7 @@ wt(O,P,Vs):- write_term(O,P,[variable_names(Vs),portrayed(true),quoted(true),ful
 
 %= 	 	 
 
-%% with_stream_pos( +In, :GoalCall) is semidet.
+%% with_stream_pos( +In, :Goal) is semidet.
 %
 % Using Stream Pos.
 %
