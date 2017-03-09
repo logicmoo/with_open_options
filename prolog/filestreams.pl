@@ -38,7 +38,7 @@
         thread_httpd:accept_hook/2,
         thread_httpd:make_socket_hook/3,
         thread_httpd:open_client_hook/5,
-        open_options/2,
+        http:open_options/2,
         package_path/2.
 :- meta_predicate((
         with_stream_pos(+, 0),
@@ -162,11 +162,9 @@ wto(Out,Wff,Opts):-
 file_newer(NamePl,Name):- exists_file(NamePl),exists_file(Name), 
   time_file(NamePl,T1),time_file(Name,T2),!,T1>T2.
 
-file_needs_rebuilt(NamePl,_Name):- \+ exists_file(NamePl),!.
-file_needs_rebuilt(NamePl,Name):- \+ file_newer(NamePl,Name),
-   exists_file(Name), 
-   size_file(NamePl,S1),size_file(Name,S2),Thresh is S2 * 0.75,!,
-   S1<Thresh.
+file_needs_rebuilt(NamePl,Name):- \+ file_newer(NamePl,Name).
+file_needs_rebuilt(NamePl,Name):- size_file(NamePl,S1), (S1< 1000 ;
+ (size_file(Name,S2), Thresh is S2 * 0.50,!,S1<Thresh)).
 
 ensure_loaded_with(ModuleFile,With):-   
    strip_module(ModuleFile,Module,File),
@@ -325,11 +323,7 @@ SWI-Prolog installation directory.
 %	ssl(SSLOptions) is provided.
 %
 %	@see thread_httpd:accept_hook/2 handles the corresponding accept
-
-
-%= 	 	 
-
-%% make_socket_hook( ?Port, :TermM, ?Options) is semidet.
+%
 %
 % Hook To [thread_httpd:make_socket_hook/3] For Module Logicmoo_util_filestreams.
 % Make Socket Hook.
@@ -370,12 +364,7 @@ make_socket(Port, Socket, _Options) :-
 %%	thread_httpd:accept_hook(:Goal, +Options) is semidet.
 %
 %	Implement the accept for HTTPS connections.
-
-
-%= 	 	 
-
-%% accept_hook( ?Goal, ?Options) is semidet.
-%
+% 
 % Hook To [thread_httpd:accept_hook/2] For Module Logicmoo_util_filestreams.
 % Accept Hook.
 %
@@ -391,7 +380,7 @@ thread_httpd:accept_hook(Goal, Options) :-
 
 %= 	 	 
 
-%% open_client_hook( :TermSSL, ?Goal, ?In, ?Out, ?Peer) is semidet.
+%% thread_httpd:open_client_hook( :TermSSL, ?Goal, ?In, ?Out, ?Peer) is semidet.
 %
 % Hook To [thread_httpd:open_client_hook/5] For Module Logicmoo_util_filestreams.
 % Open Client Hook.
@@ -421,20 +410,14 @@ ssl_failed(Read, Write, E) :-
 		 *	   CLIENT HOOKS		*
 		 *******************************/
 
-%%	http:http_protocol_hook(+Scheme, +Parts, +PlainStreamPair,
-%%				-StreamPair, +Options) is semidet.
+%	http:http_protocol_hook(+Scheme, +Parts, +PlainStreamPair,
+%				-StreamPair, +Options) is semidet.
 %
 %	Hook for http_open/3 to connect  to   an  HTTPS (SSL-based HTTP)
 %	server.   This   plugin   also   passes   the   default   option
 %	`cacert_file(system(root_certificates))` to ssl_context/3.
-
-
-%= 	 	 
-
-%% http_protocol_hook( ?VALUE1, ?Parts, ?PlainStreamPair, ?StreamPair, ?Options) is semidet.
 %
 % Hook To [http:http_protocol_hook/5] For Module Logicmoo_util_filestreams.
-% Http Protocol Hook.
 %
 http:http_protocol_hook(https, Parts, PlainStreamPair, StreamPair, Options):-
 	ssl_protocol_hook(Parts, PlainStreamPair, StreamPair, Options).
@@ -460,39 +443,24 @@ ssl_protocol_hook(Parts, PlainStreamPair, StreamPair, Options) :-
               ( ssl_exit(SSL), throw(Exception)) ),
         stream_pair(StreamPair, In, Out).
 
-%%	http:open_options(Parts, Options) is nondet.
+%	http:open_options(Parts, Options) is nondet.
+%  
+%  Hook To [http:open_options/2] For Module Logicmoo_util_filestreams.
 %
 %	Implementation of the multifile hook http:open_options/2 used by
 %	library(http/http_open). By default, we use   the system trusted
 %	root certificate database for validating an SSL certificate.
-
-
-%= 	 	 
-
-%% open_options( ?Parts, ?Options) is semidet.
-%
-% Hook To [http:open_options/2] For Module Logicmoo_util_filestreams.
-% Open Options.
-%
 http:open_options(Parts, Options) :-
 	memberchk(scheme(https), Parts),
 	Options = [cacert_file(system(root_certificates))].
 
-%%	http:http_connection_over_proxy(+Proxy, +Parts, +HostPort, -StreamPair,
-%%					+OptionsIn, -OptionsOut)
+%	http:http_connection_over_proxy(+Proxy, +Parts, +HostPort, -StreamPair, +OptionsIn, -OptionsOut)
 %
 %	Facilitate an HTTPS connection via a   proxy using HTTP CONNECT.
 %	Note that most proxies will only  support this for connecting on
 %	port 443
-
-
-%= 	 	 
-
-%% http_connection_over_proxy( :TermProxyHost, ?Parts, :TermHost, ?StreamPair, ?Options, ?Options) is semidet.
 %
-% Hook To [http:http_connection_over_proxy/6] For Module Logicmoo_util_filestreams.
-% Http Connection Over Proxy.
-%
+%  Hook To [http:http_connection_over_proxy/6] For Module Logicmoo_util_filestreams.
 http:http_connection_over_proxy(proxy(ProxyHost, ProxyPort), Parts,
 				Host:Port, StreamPair, Options, Options) :-
         memberchk(scheme(https), Parts), !,
@@ -598,4 +566,4 @@ file_to_stream(Spec,Stream):-file_to_stream(match(Spec),Stream).
 %
 copy_stream(HTTP_Stream,Stream):-read_stream_to_codes(HTTP_Stream,Codes),catch(close(HTTP_Stream),_,true),open_codes_stream(Codes,Stream).
 
-
+:- fixup_exports.
