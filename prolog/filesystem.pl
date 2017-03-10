@@ -544,7 +544,8 @@ in_include_file:- prolog_load_context(file,F),!, \+ prolog_load_context(source,F
 %
 % Remove Search Path.
 %
-remove_search_path(Alias, Abs) :- ignore((clause(user:file_search_path(Alias, AbsW),true,Ref),same_file(Abs,AbsW),erase(Ref),fail)).
+remove_search_path(Alias, Abs) :- ignore((clause(user:file_search_path(Alias, AbsW0),true,Ref),
+                                          absolute_file_name(AbsW0,AbsW),same_file(Abs,AbsW),erase(Ref),fail)).
 
 %= 	 	 
 
@@ -568,7 +569,7 @@ add_to_search_path_last(Alias, Abs) :- remove_search_path(Alias, Abs), assertz(u
 %
 % In Search Path.
 %
-in_search_path(Alias, Abs) :- user:file_search_path(Alias,Was),same_file(Abs,Was).
+in_search_path(Alias, Abs) :- user:file_search_path(Alias,Was0),absolute_file_name(Was0,Was),same_file(Abs,Was).
 
 
 
