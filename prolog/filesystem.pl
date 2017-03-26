@@ -793,9 +793,7 @@ time_file_safe(F,INNER_XML):-exists_file_safe(F),!,time_file(F,INNER_XML).
 %
 % If File Exists.
 %
-if_file_exists(M:Call):- arg(1,Call,File),(filematch(File,_)-> must((filematch(File,X),exists_file(X),call(M:Call)));fmt(not_installing(M,Call))),!.
-
-
+if_file_exists(M:Call):- arg(1,Call,MMFile),strip_module(MMFile,_,File),(exists_source(File)-> must((call(M:Call)));fmt(not_installing(M,Call))),!.
 
 
 % =================================================================================
