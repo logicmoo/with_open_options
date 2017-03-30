@@ -47,7 +47,6 @@
             filematch3/3,
             filematch_ext/3,
             global_pathname/2,
-            if_file_exists/1,
             if_startup_script/0,
             in_include_file/0,
             if_startup_script/1,
@@ -85,7 +84,6 @@
         enumerate_files(:, -),
         filematch(:, -),
         filematch_ext(+, :, -),
-        if_file_exists(:),
         if_startup_script(0),
         with_filematch(0).
 :- module_transparent
@@ -784,16 +782,6 @@ time_file_safe(_:F,INNER_XML):-atom(F),!,exists_file_safe(F),time_file(F,INNER_X
 time_file_safe(F,INNER_XML):-exists_file_safe(F),!,time_file(F,INNER_XML).
 
 
-
-:- meta_predicate(if_file_exists(:)).
-
-%= 	 	 
-
-%% if_file_exists( ?M) is semidet.
-%
-% If File Exists.
-%
-if_file_exists(M:Call):- arg(1,Call,MMFile),strip_module(MMFile,_,File),(exists_source(File)-> must((call(M:Call)));fmt(not_installing(M,Call))),!.
 
 
 % =================================================================================
