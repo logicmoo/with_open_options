@@ -194,7 +194,7 @@ add_library_search_path(Path,Masks):-
    forall(resolve_dir(Path,Dir), 
       (make_library_index(Dir, Masks), 
         (user:library_directory(Dir) -> true ; (asserta(user:library_directory(Dir)), 
-          reload_library_index)))).
+          (access_file(Dir,write)->reload_library_index;true))))).
 
 
 
