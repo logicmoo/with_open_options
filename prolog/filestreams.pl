@@ -204,20 +204,21 @@ each_single(CB,N=V):-call(CB,N,V).
 %rt(In,WffO,VsO):- catch(read_term(In,Wff,[module(user),double_quotes(string),variable_names(Vs),singletons(Singles)]),E,(dmsg(E),dtrace,fail)),correct_singletons(Wff,WffO,Vs,Singles,VsO).
 wt(string(O),P,Vs):- !, with_output_to(string(O), write_term(P,[variable_names(Vs),portrayed(true),quoted(true),fullstop(true),ignore_ops(true),nl(true),singletons(false)])).
 wt(O,P,Vs):- write_term(O,P,[variable_names(Vs),portrayed(true),quoted(true),fullstop(true),ignore_ops(true),nl(true),singletons(false)]).
-
-%= 	 	 
+      
 
 %% with_stream_pos( +In, :Goal) is semidet.
 %
-% Using Stream Pos.
+% If Goal fails or exceptions then the Stream Postion is reset.
 %
 with_stream_pos(In,Call):-
-   must(( stream_property(In, position(InitalPos)),
+    must((stream_property(In, position(InitalPos)),
     PS = position(InitalPos))),
     (Call *-> 
-       (stream_property(In, position(NewPos)),nb_setarg(1,PS,NewPos)) ; 
-       ((arg(1,PS,Pos),set_stream_position(In, Pos)),!,fail)).
+       (stream_property(In,position(NewPos)),nb_setarg(1,PS,NewPos)) ; 
+       ((arg(1,PS,Pos),set_stream_position_safe(In, Pos),!,fail))).
 
+set_stream_position_safe(In,Pos):- catch(set_stream_position(In,Pos),
+   error(permission_error(reposition, stream, In),Cxt),dmsg(warn(error(permission_error(reposition, stream, In),Cxt)))).
 
 :- export(l_open_input/2).
 :- export(l_open_input0/2).
