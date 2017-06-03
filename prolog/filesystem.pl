@@ -153,6 +153,14 @@
 :-endif.
 
 
+
+% '/root/lib/swipl/pack/mpi'
+% pack_property(Pack, directory(PackDir)),atom_concat(PackDir,'/*',writeln(WC),expand_file_name(WC,O),O\=[],length(O,L).
+
+% file_tree(Dir,Files):-
+  
+
+
 %% resolve_dir( ?Dir, ?Dir) is semidet.
 %
 % Resolve Dir.
