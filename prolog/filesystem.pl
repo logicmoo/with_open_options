@@ -745,11 +745,6 @@ exists_dirf(X):-atomic(X),(exists_file(X);exists_directory(X)).
 
 %= 	 	 
 
-%% atom_concat_safe( ?L, ?R, ?A) is semidet.
-%
-% Atom Concat Safely Paying Attention To Corner Cases.
-%
-atom_concat_safe(L,R,A):- ((atom(A),(atom(L);atom(R))) ; ((atom(L),atom(R)))), !, atom_concat(L,R,A),!.
 
 %= 	 	 
 
