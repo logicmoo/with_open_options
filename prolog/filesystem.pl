@@ -19,7 +19,7 @@
             add_to_search_path/3,
             add_to_search_path_first/2,
             add_to_search_path_last/2,
-            atom_concat_safe/3,
+            atom_concat_safe0/3,
             atom_ensure_endswtih/3,
             canonical_pathname/2,
             clip_dir_sep/2,
@@ -92,7 +92,7 @@
         add_to_search_path/2,
         add_to_search_path_first/2,
         add_to_search_path_last/2,
-        atom_concat_safe/3,
+        atom_concat_safe0/3,
         atom_ensure_endswtih/3,
         canonical_pathname/2,
         clip_dir_sep/2,
@@ -811,8 +811,10 @@ global_pathname(B,A):-relative_pathname(B,A).
 relative_pathname(Path,Relative):-absolute_file_name(Path,[relative_to('./')],Absolute),member(Rel,['./','../','../../']),absolute_file_name(Rel,Clip),
   canonical_pathname(Absolute,AbsoluteA),
   canonical_pathname(Clip,ClipA),
-  atom_concat_safe(ClipA,RelativeA,AbsoluteA),!,atom_concat_safe(Rel,RelativeA,Relative),!.
+  atom_concat_safe0(ClipA,RelativeA,AbsoluteA),!,atom_concat_safe0(Rel,RelativeA,Relative),!.
 relative_pathname(Path,Relative):-canonical_pathname(Path,Relative),!.
+
+atom_concat_safe0(L,R,A):- ((atom(A),(atom(L);atom(R))) ; ((atom(L),atom(R)))), !, atom_concat(L,R,A),!.
 
 
 %= 	 	 
@@ -872,7 +874,7 @@ os_to_prolog_filename(OS,PL):-current_directory_search(CurrentDir),join_path(Cur
 os_to_prolog_filename(OS,PL):-current_directory_search(CurrentDir),join_path(CurrentDir,OS,PL),exists_directory_safe(PL),!.
 
 os_to_prolog_filename(OS,PL):-atom(OS),atomic_list_concat([X,Y|Z],'\\',OS),atomic_list_concat([X,Y|Z],'/',OPS),!,os_to_prolog_filename(OPS,PL).
-os_to_prolog_filename(OS,PL):-atom_concat_safe(BeforeSlash,'/',OS),os_to_prolog_filename(BeforeSlash,PL).
+os_to_prolog_filename(OS,PL):-atom_concat_safe0(BeforeSlash,'/',OS),os_to_prolog_filename(BeforeSlash,PL).
 os_to_prolog_filename(OS,PL):-absolute_file_name(OS,OSP),OS \== OSP,!,os_to_prolog_filename(OSP,PL).
 
 
