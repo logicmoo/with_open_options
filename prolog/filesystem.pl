@@ -295,7 +295,7 @@ filematch(Spec,Result):-  enumerate_files(Spec,Result).
 % Filematch Ext.
 %
 filematch_ext(Ext,FileIn,File):-
-  locally(t_l:file_ext(Ext),filematch(FileIn,File)).
+  locally_tl(file_ext(Ext),filematch(FileIn,File)).
 
 :- meta_predicate(enumerate_files(:,-)).
 :- export(enumerate_files/2).
