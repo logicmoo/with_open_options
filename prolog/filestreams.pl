@@ -162,6 +162,7 @@ wto(Out,Wff,Opts):-
 file_newer(NamePl,Name):- exists_file(NamePl),exists_file(Name), 
   time_file(NamePl,T1),time_file(Name,T2),!,T1>T2.
 
+file_needs_rebuilt(_,_).
 file_needs_rebuilt(NamePl,Name):- \+ file_newer(NamePl,Name).
 file_needs_rebuilt(NamePl,Name):- size_file(NamePl,S1), (S1< 1000 ;
  (size_file(Name,S2), Thresh is S2 * 0.50,!,S1<Thresh)).
