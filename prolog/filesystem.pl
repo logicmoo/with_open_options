@@ -877,4 +877,4 @@ os_to_prolog_filename(OS,PL):-atom(OS),atomic_list_concat([X,Y|Z],'\\',OS),atomi
 os_to_prolog_filename(OS,PL):-atom_concat_safe0(BeforeSlash,'/',OS),os_to_prolog_filename(BeforeSlash,PL).
 os_to_prolog_filename(OS,PL):-absolute_file_name(OS,OSP),OS \== OSP,!,os_to_prolog_filename(OSP,PL).
 
-
+:- fixup_exports.
