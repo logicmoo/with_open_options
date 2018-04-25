@@ -33,6 +33,7 @@
           ]).
 
 :- meta_predicate(ensure_loaded_with(:,3)).
+:- use_module(library(logicmoo_util_startup)).
 
 :- multifile
         thread_httpd:accept_hook/2,
@@ -146,7 +147,7 @@ write_translation(Out,Wff-Vs):- !, must(is_list(Vs)),
 write_translation(Out,Wff):- nb_current('$variable_names',Vs),
   wto(Out,Wff,[variable_names(Vs),portrayed(true),quoted(true),fullstop(true),ignore_ops(true),nl(true),singletons(false)]).
 
-:-nb_setval('$ra5_often',1).
+:-thread_initialization(nb_setval('$ra5_often',1)).
 
 :- export(when_file_output/1).
 when_file_output(G):- (current_output(X),stream_property(X,file_name(_)))->call(G);true.
