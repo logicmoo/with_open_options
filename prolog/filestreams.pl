@@ -34,6 +34,7 @@
 
 :- meta_predicate(ensure_loaded_with(:,3)).
 :- use_module(library(logicmoo_util_startup)).
+:- use_module(library(filesystem)).
 
 :- multifile
         thread_httpd:accept_hook/2,
