@@ -211,7 +211,7 @@ maybe_add_import_module(A,B):-maybe_add_import_module(A,B,start).
 
 %TODO
 maybe_add_import_module(_From,_To,_):- !.
-
+maybe_add_import_module(_From,user,_Start).
 maybe_add_import_module(From,To,_):- (call(ereq,mtCycL(From)); call(ereq,mtCycL(To))),!.
 maybe_add_import_module(From,To,_):- default_module(From,To),!.
 maybe_add_import_module(user,_,start):-!.
