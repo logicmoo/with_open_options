@@ -205,25 +205,8 @@ add_library_search_path(Path,Masks):-
           (access_file(Dir,write)->reload_library_index;true))))).
 
 
-
-
-maybe_add_import_module(A,B):-maybe_add_import_module(A,B,start).
-
-%TODO
-maybe_add_import_module(_From,_To,_):- !.
-maybe_add_import_module(_From,user,_Start).
-maybe_add_import_module(From,To,_):- (call(ereq,mtCycL(From)); call(ereq,mtCycL(To))),!.
-maybe_add_import_module(From,To,_):- default_module(From,To),!.
-maybe_add_import_module(user,_,start):-!.
-maybe_add_import_module(From,To,Start):-  
-   maybe_delete_import_module(To,From),
-   catch(add_import_module(From,To,Start),E,writeln(E=add_import_module(From,To,Start))).
-
-maybe_delete_import_module(_From,To):- To = user,!.
-maybe_delete_import_module(_From,To):- To = system,!.
-
-
 :- meta_predicate(with_filematch(0)).
+
 %= 	 	 
 
 %% with_filematch( :GoalG) is semidet.
@@ -295,23 +278,29 @@ filematch(Spec,Result):-  enumerate_files(Spec,Result).
 % Filematch Ext.
 %
 filematch_ext(Ext,FileIn,File):-
-  locally_tl(file_ext(Ext),filematch(FileIn,File)).
+  locally_tl(file_ext(Ext),findall(File,filematch(FileIn,File),List)),
+   when_ends_with(Ext,List,File).
 
-:- meta_predicate(enumerate_files(:,-)).
-:- export(enumerate_files/2).
+when_ends_with(_Ext,[],_File):- !,fail.
+when_ends_with(Ext,List,File):- ((member(File,List),only_if_ends_with(Ext,File)))*->true;member(File,List).
+
+only_if_ends_with(Ext,File):- atom(Ext),!,Ext\==[],atom_concat(_,Ext,File).
+only_if_ends_with([Ext|L],File):- only_if_ends_with(Ext,File)->true;only_if_ends_with(L,File).
 
 %= 	 	 
+:- meta_predicate(enumerate_files(:,-)).
+:- export(enumerate_files/2).
 
 %% enumerate_files( ?CALL1, -Result) is semidet.
 %
 % Enumerate Files.
 %
-enumerate_files(_:Spec,Result):- call((atom(Spec),is_absolute_file_name(Spec),(exists_file(Spec);exists_directory(Spec)),prolog_to_os_filename(Result,Spec))),!.
+enumerate_files(Spec0,Result):- strip_module(Spec0,_,Spec),
+   call((atom(Spec),(exists_file(Spec);exists_directory(Spec)),prolog_to_os_filename(Result,Spec))),!,
+   absolute_file_name(Spec,Result).
 enumerate_files(M:Spec,Result):-
    call((no_repeats_old([Result],((enumerate_m_files(M,Spec,NResult),once((normalize_path(NResult,Result)->exists_file_or_dir(Result)))))))).
 
-:- meta_predicate(enumerate_files(:,-)).
-:- export(enumerate_m_files/3).
 
 %= 	 	 
 
@@ -319,6 +308,7 @@ enumerate_files(M:Spec,Result):-
 %
 % Enumerate Module Files.
 %
+:- export(enumerate_m_files/3).
 enumerate_m_files(user, Mask,File1):-!,enumerate_files0(Mask,File1).
 enumerate_m_files(M, Mask,File1):- enumerate_files0(Mask,File1)*->true;enumerate_m_files_mscoped(M, Mask,File1).
 

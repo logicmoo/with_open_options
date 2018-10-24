@@ -331,7 +331,9 @@ SWI-Prolog installation directory.
 % Hook To [thread_httpd:make_socket_hook/3] For Module Logicmoo_util_filestreams.
 % Make Socket Hook.
 %
-thread_httpd:make_socket_hook(Port, M:Options0, Options) :-
+thread_httpd:make_socket_hook(Port, Options0, Options) :- thread_httpd_make_socket_hook(Port, Options0, Options).
+
+thread_httpd_make_socket_hook(Port, M:Options0, Options) :-
 	memberchk(ssl(SSLOptions), Options0), !,
 	make_socket(Port, Socket, Options0),
 	ssl_context(server,
